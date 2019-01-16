@@ -1,18 +1,29 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1 class="home-h1">欢迎使用Lime项目管理系统</h1>
+    <p class="home-p">请点击左侧菜单进行操作。</p>
+    <br/><br/>
+
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
-  name: 'home',
+  name: "home",
   components: {
-    HelloWorld
+
   }
-}
+};
 </script>
+
+<style>
+  .home-h1{
+    font-size: 3em;
+
+  }
+  .home-p{
+    color: darkred;
+    font-size: 1.5em;
+  }
+</style>
