@@ -30,7 +30,7 @@
                         </div>
                     </el-header>
                     <el-main height>
-                        <router-view></router-view>
+                        <router-view @no-login="noLogin"></router-view>
                     </el-main>
                 </el-container>
             </el-container>
@@ -66,8 +66,7 @@
     }
 
 
-
-    .basic-form{
+    .basic-form {
         width: 400px;
     }
 
@@ -104,9 +103,15 @@
                 permission: []
             };
         },
+        provide() {
+            return {
+                username: this.username,
+                permission: this.permission
+            }
+        },
         computed: {
             allFuncs() {
-                if(this.permission.includes("all")){
+                if (this.permission.includes("all")) {
                     return AllFunctions.value;
                 }
 
@@ -122,7 +127,7 @@
                             retGroup.functions.push(func)
                         }
                     }
-                    if(retGroup.functions.length>0){
+                    if (retGroup.functions.length > 0) {
                         ret.push(retGroup)
                     }
                 }
@@ -134,6 +139,10 @@
                 this.isLogin = true;
                 this.username = data.username;
                 this.permission = data.permission;
+            },
+
+            noLogin() {
+                this.isLogin = false;
             }
         },
         mounted() {

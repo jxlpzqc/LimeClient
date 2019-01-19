@@ -9,6 +9,8 @@ export default {
             id: "project",
             functions: [
                 {name: "创建合同", id: "new", permission: "newProject", component: NewProject},
+                {name: "我创建的", id: "my", permission: "newProject", component: ()=>{return import('./views/Project/MyCreated.vue')}},
+                {name: "所有合同", id: "list", permission: "viewProject", component: NewProject},
 
             ]
         }
