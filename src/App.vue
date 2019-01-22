@@ -4,7 +4,7 @@
             <el-container>
                 <el-aside width="200px">
                     <div class="logo-div">Lime项目管理系统</div>
-                    <el-menu default-active="home" :default-openeds="['0']" :collapse="false">
+                    <el-menu default-active="home">
                         <router-link to="/">
                             <el-menu-item index="home">欢迎</el-menu-item>
                         </router-link>
@@ -26,7 +26,15 @@
                     <el-header height="60px">
                         {{$route.name}}
                         <div class="user-info">
-                            {{username}}
+                            <el-dropdown @command="handleDropdown">
+                                <span>{{username}}<i class="el-icon-arrow-down el-icon--right"></i></span>
+
+                                <el-dropdown-menu slot="dropdown">
+                                    <el-dropdown-item>用户信息</el-dropdown-item>
+                                    <el-dropdown-item command="logout">安全退出</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </el-dropdown>
+
                         </div>
                     </el-header>
                     <el-main height>
@@ -143,6 +151,22 @@
 
             noLogin() {
                 this.isLogin = false;
+            },
+
+            handleDropdown(command) {
+                if (command == 'logout') {
+                    LimeHttp.post("/user/logout").then((resp) => {
+                        this.$message(resp.data.msg);
+                        if (resp.data.code == 0) {
+                            this.isLogin = false;
+                            this.username = "未登录";
+                            this.permission = [];
+                            this.$router.push('/')
+                        }
+                    }).catch(() => {
+                        this.$message("服务器发生异常")
+                    });
+                }
             }
         },
         mounted() {

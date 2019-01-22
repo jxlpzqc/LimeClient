@@ -10,8 +10,8 @@
                     <el-button slot="append" @click="chooseDialog=true">选择</el-button>
                 </el-input>
             </el-form-item>
-            <el-form-item label="项目名称">{{project.name}}</el-form-item>
-            <el-form-item label="负责人">{{project.person}}</el-form-item>
+            <el-form-item label="项目名称">{{handleEmpty(project.name)}}</el-form-item>
+            <el-form-item label="负责人">{{handleEmpty(project.person)}}</el-form-item>
 
             <el-form-item label="开具公司" prop="partyB">
                 <el-select v-model="invoice.partyB" :filterable="true" style="width: 320px">
@@ -75,7 +75,7 @@
                     rate: '',
                     cash: '0',
                     card: '0',
-                    ps:''
+                    ps: ''
                 },
                 rule: {
                     id: [{required: true, message: '请填写发票号码'}, {min: 8, max: 8, message: "发票号码为8位", trigger: "change"}],
@@ -90,8 +90,8 @@
                 taxList: tax,
                 partyBList: partyB,
                 chooseDialog: false,
-                project:{},
-                loading:false
+                project: {},
+                loading: false
 
             }
         },
@@ -114,6 +114,15 @@
             }
         },
         methods: {
+            handleEmpty(value) {
+                if (value == null) {
+                    return "请选择合同";
+                } else {
+                    return value;
+                }
+            },
+
+
             finishChoose(row) {
                 this.invoice.projectId = row.id;
                 this.chooseDialog = false;
@@ -129,7 +138,7 @@
                                 this.loading = false;
                                 this.$message(resp.data.msg);
                                 if (resp.data.code == 0) {
-                                    this.$alert("修改成功");
+                                    this.$alert("发票开具成功");
                                     this.$emit("success");
 
                                 } else if (resp.data.code == -400) {

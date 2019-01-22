@@ -8,9 +8,9 @@ export default {
             groupname: "合同",
             id: "project",
             functions: [
-                {name: "创建合同", id: "new", permission: "newProject", component: NewProject},
-                {name: "我创建的", id: "my", permission: "newProject", component: ()=>{return import('./views/Project/MyCreated.vue')}},
-                {name: "所有合同", id: "list", permission: "viewProject", component: ()=>{return import('./views/Project/AllProject.vue')}},
+                {name: "创建合同", id: "new", permission: "NewProject", component: NewProject},
+                {name: "我创建的", id: "my", permission: "NewProject", component: ()=>{return import('./views/Project/MyCreated.vue')}},
+                {name: "所有合同", id: "list", permission: "ViewProject", component: ()=>{return import('./views/Project/AllProject.vue')}},
 
             ]
         },
@@ -18,7 +18,8 @@ export default {
             groupname: "请款",
             id: "request",
             functions: [
-                {name: "开具发票", id: "new", permission: "newInvoice", component: ()=>{return import("./views/Request/NewInvoice.vue")}},
+                {name: "开票", id: "new", permission: "NewInvoice", component: ()=>{return import("./views/Request/NewInvoice.vue")}},
+                {name: "收款", id: "arrive", permission: "MoneyArrive", component: ()=>{return import("./views/Request/MoneyArrive.vue")}},
 
             ]
         }
