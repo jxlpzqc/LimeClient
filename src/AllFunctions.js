@@ -10,7 +10,15 @@ export default {
             functions: [
                 {name: "创建合同", id: "new", permission: "newProject", component: NewProject},
                 {name: "我创建的", id: "my", permission: "newProject", component: ()=>{return import('./views/Project/MyCreated.vue')}},
-                {name: "所有合同", id: "list", permission: "viewProject", component: NewProject},
+                {name: "所有合同", id: "list", permission: "viewProject", component: ()=>{return import('./views/Project/AllProject.vue')}},
+
+            ]
+        },
+        {
+            groupname: "请款",
+            id: "request",
+            functions: [
+                {name: "开具发票", id: "new", permission: "newInvoice", component: ()=>{return import("./views/Request/NewInvoice.vue")}},
 
             ]
         }
