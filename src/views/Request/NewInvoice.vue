@@ -52,6 +52,7 @@
         <el-dialog title="选择合同" :visible="chooseDialog" :show-close="false" :close-on-click-modal="false">
             <ProjectList :choose="true" api="/project/allProject" @choose-item="finishChoose"></ProjectList>
         </el-dialog>
+
     </div>
 
 </template>

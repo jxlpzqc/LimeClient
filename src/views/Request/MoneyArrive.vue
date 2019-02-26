@@ -49,7 +49,7 @@
                     <el-table-column label="到账金额" prop="arrive"></el-table-column>
                     <el-table-column label="未到账金额">
                         <template slot-scope="scope">
-                            {{parseFloat(scope.row.sum) - parseFloat(scope.row.arrive)}}
+                            {{ (parseFloat(scope.row.sum) - parseFloat(scope.row.arrive)).toFixed(2)}}
                         </template>
                     </el-table-column>
                     <!--<el-table-column label="税率" width="100" prop="rate"></el-table-column>-->
@@ -65,8 +65,8 @@
                     </el-table-column>
 
                 </el-table>
-                <p style="margin:10px">当前已经分配:{{arrangeSum}}元</p>
-                <p style="margin:10px">剩余:{{arrangeLeft}}元</p>
+                <p style="margin:10px">当前已经分配:{{showArrangeSum}}元</p>
+                <p style="margin:10px">剩余:{{showArrangeLeft}}元</p>
                 <el-button @click="previousStep">上一步</el-button>
                 <el-button type="primary" @click="submit" :disabled="!isAbled">提交</el-button>
                 <span style="color: red;margin-left: 20px;">{{errorMsg}}</span>
@@ -79,6 +79,14 @@
                         :closable="false"
                         show-icon>
                 </el-alert>
+                <el-button type="primary" v-print="'#printAera'">打印结果</el-button>
+                <div id="printAera" class="print-aera" style="@media screen {
+                    display: none;
+                }">
+                    <h1>收款结果</h1>
+
+
+                </div>
             </template>
         </div>
     </div>
@@ -88,6 +96,7 @@
     import ProjectList from "../../components/ProjectList";
     import InvoiceList from "../../components/InvoiceList";
     import {getpartyBName} from "../../partyB";
+    import {LimeHttp} from "../../ajax";
 
     export default {
         name: "MoneyArrive",
@@ -98,7 +107,7 @@
                 project: [],
                 money: '',
                 account: '',
-                errorMsg:'',
+                errorMsg: '',
                 selection: [],
                 arrange: [],
                 loading: false,
@@ -117,7 +126,7 @@
                     this.$message("请选择发票");
                 } else {
                     this.arrange = [];
-                    for(let i=0;i<this.selectCount;i++){
+                    for (let i = 0; i < this.selectCount; i++) {
                         this.arrange.push(0);
                     }
                     this.nextStep();
@@ -152,9 +161,9 @@
                 let newArrange = [];
                 for (let i = 0; i < this.selectCount; i++) {
                     if (ret > 0) {
-                        let retI = parseFloat(this.selection[i].sum) - parseFloat(this.selection[i].arrive)
+                        let retI = parseFloat((parseFloat(this.selection[i].sum) - parseFloat(this.selection[i].arrive)).toFixed(2))
 
-                        newArrange[i] = Math.min(ret, retI)
+                        newArrange[i] = parseFloat(Math.min(ret, retI).toFixed(2))
 
                         ret -= newArrange[i]
                     } else {
@@ -169,20 +178,46 @@
                 let newArrange = [];
                 let sum = 0;
                 this.selection.forEach((value => {
-                    sum += (value.sum - value.arrive);
+                    sum += parseFloat((value.sum - value.arrive).toFixed(2));
                 }))
 
                 for (let i = 0; i < this.selectCount - 1; i++) {
-                    let retI = this.selection[i].sum - this.selection[i].arrive;
+                    let retI = parseFloat((parseFloat(this.selection[i].sum) - parseFloat(this.selection[i].arrive)).toFixed(2))
+
                     newArrange[i] = parseFloat(((retI / sum) * this.moneyParse).toFixed(2));
                     ret -= newArrange[i]
                 }
-                newArrange[this.selectCount - 1] = ret;
+                newArrange[this.selectCount - 1] = parseFloat(ret.toFixed(2));
                 this.arrange = newArrange;
             },
-            submit(){
-                this.loading = true;
-            }
+            submit() {
+                if (this.isAbled) {
+                    this.loading = true;
+                    let postData = [];
+                    for (let i = 0; i < this.selectCount; i++) {
+                        let x = {id: this.selection[i].id, money: this.arrange[i]};
+                        postData.push(x);
+                    }
+                    LimeHttp.post("/invoice/moneyArrive", {
+                        accountID: this.account,
+                        list: postData
+                    }).then((resp) => {
+                        this.loading = false;
+                        this.$message(resp.data.msg);
+                        if (resp.data.code == 0) {
+                            this.nextStep();
+                        } else if (resp.data.code == -401) {
+                            this.$emit('no-login');
+                        } else {
+                            this.$alert(resp.data.msg);
+                        }
+                    }).catch(() => {
+                        this.loading = false;
+                        this.$message("服务器出现异常");
+                    })
+                }
+            },
+
         },
         computed: {
             selectCount() {
@@ -197,32 +232,39 @@
                 this.arrange.forEach((value => {
                     sum += parseFloat(parseFloat(value).toFixed(2));
                 }))
-                if (isNaN(sum)) {
+                return sum;
+
+            },
+            showArrangeSum(){
+                if (isNaN(this.arrangeSum)) {
                     return "#出错#";
                 } else {
-                    return sum;
+                    return this.arrangeSum.toFixed(2);
                 }
-
             },
             arrangeLeft() {
                 let ret = this.moneyParse - this.arrangeSum;
-                if (isNaN(ret) || ret < 0) {
+                return ret;
+            },
+            showArrangeLeft(){
+                if (isNaN(this.arrangeLeft)) {
                     return "#出错#";
                 } else {
-                    return ret;
+                    return this.arrangeLeft.toFixed(2);
                 }
             },
-            isAbled(){
-                for(let i=0;i<this.selectCount;i++)
-                {
-                    let retI = this.selection[i].sum - this.selection[i].arrive;
-                    if(retI < this.arrange[i]){
+            isAbled() {
+                for (let i = 0; i < this.selectCount; i++) {
+                    let retI = parseFloat((parseFloat(this.selection[i].sum) - parseFloat(this.selection[i].arrive)).toFixed(2))
+
+                    if (retI < this.arrange[i]) {
                         this.errorMsg = "存在分配值大于未到账金额的数据！";
                         return false;
-                    }else if(this.arrangeLeft != 0){
+                    } else if (this.arrangeLeft != 0) {
                         this.errorMsg = "没有分配完全！"
                         return false;
-0                   }
+                        0
+                    }
                     this.errorMsg = '';
                     return true;
                 }
@@ -231,6 +273,16 @@
     }
 </script>
 
-<style scoped>
+<style>
+    @media screen{
+        .print-aera{
+            display: none;
+        }
+    }
+    @media print{
+        .print-aera{
+            display: block;
+        }
+    }
 
 </style>

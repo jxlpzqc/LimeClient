@@ -20,6 +20,7 @@ export default {
             functions: [
                 {name: "开票", id: "new", permission: "NewInvoice", component: ()=>{return import("./views/Request/NewInvoice.vue")}},
                 {name: "收款", id: "arrive", permission: "MoneyArrive", component: ()=>{return import("./views/Request/MoneyArrive.vue")}},
+                {name: "结账", id: "pay", permission: "PayInvoice", component: ()=>{return import("./views/Request/PayInvoice.vue")}},
 
             ]
         }

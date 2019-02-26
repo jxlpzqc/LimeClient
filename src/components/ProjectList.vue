@@ -18,10 +18,10 @@
                 </template>
             </el-table-column>
 
-            <el-table-column label="合同编号" width="90" prop="id"></el-table-column>
-            <el-table-column label="项目名称" width="180" prop="name"></el-table-column>
+            <el-table-column label="合同编号" width="100" prop="id"></el-table-column>
+            <el-table-column label="项目名称" prop="name"></el-table-column>
 
-            <el-table-column label="甲方" width="180" prop="partyA"></el-table-column>
+            <el-table-column label="甲方" prop="partyA"></el-table-column>
             <el-table-column label="乙方" width="180">
                 <template slot-scope="scope">
                     {{getpartyBName(scope.row.partyB)}}
@@ -30,13 +30,13 @@
             <el-table-column label="合同金额" width="90" prop="price"></el-table-column>
             <el-table-column label="合同日期" width="100" prop="date"></el-table-column>
             <el-table-column label="负责人" width="70" prop="person"></el-table-column>
-            <el-table-column label="联系电话" width="100" prop="phone"></el-table-column>
+            <el-table-column label="联系电话" width="120" prop="phone"></el-table-column>
             <el-table-column label="施工地点" width="180">
                 <template slot-scope="scope">
                     {{getRegionName(scope.row.region)}}
                 </template>
             </el-table-column>
-            <el-table-column label="施工时间" width="180">
+            <el-table-column label="施工时间" width="220">
                 <template slot-scope="scope">
                     {{scope.row.during[0]}} 至 {{scope.row.during[1]}}
                 </template>
@@ -148,7 +148,7 @@
                 this.getData();
             },
             handleDelete(index, row) {
-                this.$confirm("你确定要删除这个合同么").then(() => {
+                this.$confirm("删除这个合同，与这个合同关联的所有发票，收款记录都将会被删除，这是一个不可恢复的危险操作，请三思而后行！","危险操作",{type:'warning'}).then(() => {
                     console.log(index)
                     LimeHttp.post('/project/deleteProject', {
                         id: row.id

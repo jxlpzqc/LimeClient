@@ -78,6 +78,10 @@
         width: 400px;
     }
 
+    .form-item{
+        width: 320px;
+    }
+
     a {
         color: black;
         text-decoration: none;
